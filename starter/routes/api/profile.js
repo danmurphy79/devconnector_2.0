@@ -11,9 +11,11 @@ const auth = require("../../middleware/auth");
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // GET THE CURRENT USER'S PROFILE //////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // @route     GET api/profile/me
 // @desc      Get current user's profile
 // @access    Private bc we are getting ID from the token
+
 router.get("/me", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
@@ -35,9 +37,11 @@ router.get("/me", auth, async (req, res) => {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CREATE || UPDATE USER PROFILE //////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // @route     POST api/profile
 // @desc      Create or Update a user profile
 // @access    Private bc we are getting ID from the token
+
 router.post(
   "/",
   [
@@ -134,6 +138,7 @@ router.post(
 // @route     GET api/profile
 // @desc      Get all profiles
 // @access    Public
+
 router.get("/", async (req, res) => {
   try {
     const profiles = await Profile.find().populate("user", ["name", "avatar"]);
@@ -152,11 +157,12 @@ router.get("/", async (req, res) => {
 // @route     GET api/profile/user/:user_id
 // @desc      Get profile by user ID
 // @access    Public
+
 router.get("/user/:user_id", async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.params.user_id
-    }).populate("user", ["name", "avatar"]);
+    }).populate("user", ["name", "avatar"]); // Creates a new property called "user" on the profile object and populates it with the "name" and "avatar" values from the user in the db
 
     if (!profile) return res.status(400).json({ msg: "Profile not found" });
     res.json(profile);
@@ -176,14 +182,13 @@ router.get("/user/:user_id", async (req, res) => {
 // @route     DELETE api/profile
 // @desc      Delete profile, user and posts
 // @access    Private
+
 router.delete("/", auth, async (req, res) => {
   try {
     // TODO - remove user's posts
-    // Removes profile
-    await Profile.findOneAndRemove({ user: req.user.id });
-    // Removes user
-    await User.findOneAndRemove({ _id: req.user.id });
-    res.json({ msg: "User removed" });
+    await Profile.findOneAndRemove({ user: req.user.id }); // Removes profile
+    await User.findOneAndRemove({ _id: req.user.id }); // Removes user
+    res.json({ msg: "User removed" }); // Returns a confirmation message
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -247,13 +252,18 @@ router.put(
   }
 );
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-// DELETE PROFILE EXPERIENCE ////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+// DELETE PROFILE EXPERIENCE ///////////////////////////////
+////////////////////////////////////////////////////////////
 
-// @route     DELETE api/profile/experience/:exp_id
-// @desc      Delete experience from profile
-// @access    Private
+/* ________________________________________________________
+|                                                          |
+|   @route     DELETE api/profile/experience/:exp_id       |
+|   @desc      Delete experience from profile              |
+|   @access    Private                                     |
+| _________________________________________________________|
+*/
+
 router.delete("/experience/:exp_id", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
@@ -277,9 +287,14 @@ router.delete("/experience/:exp_id", auth, async (req, res) => {
 // ADD PROFILE EDUCATION //////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// @route     PUT api/profile/education
-// @desc      Add profile education
-// @access    Private
+/* ____________________________________________
+|                                              |
+|   @route     PUT api/profile/education       |
+|   @desc      Add profile education           |
+|   @access    Private                         |
+| _____________________________________________|
+*/
+
 router.put(
   "/education",
   [
@@ -331,13 +346,18 @@ router.put(
   }
 );
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-// DELETE PROFILE EDUCATION //////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+// DELETE PROFILE EDUCATION ////////////////////////////////////
+////////////////////////////////////////////////////////////////
+/* ________________________________________________________
+|                                                          |
+|   @route     DELETE api/profile/education/:edu_id        |
+|   @desc      Delete education from profile               |
+|   @access    Private                                     |
+| _________________________________________________________|
+*/
+////////////////////////////////////////////////////////////////
 
-// @route     DELETE api/profile/experience/:exp_id
-// @desc      Delete experience from profile
-// @access    Private
 router.delete("/education/:edu_id", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: req.user.id });
